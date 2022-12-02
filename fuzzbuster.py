@@ -25,7 +25,7 @@ def print_banner():
 print_banner()
 
 
-@Core.settings.fuzz_time
+#@Core.settings.fuzz_time
 def fuzz(url: str, wordlist: str) -> list:
     original_fuzzer_url = url
     networking = Core.network.Network()
@@ -71,6 +71,7 @@ def fuzz(url: str, wordlist: str) -> list:
             f" total URL entries.")
         for url in valid_response_list:
             logging.info(f" -  {url}")
+
         return valid_response_list
 
 
@@ -101,7 +102,7 @@ def main():
         wordlist = args.wordlist
     else:
         print(f"[!] Invalid wordlist")
-        exit(0)
+        exit(1)
 
     responses = fuzz(url, wordlist)
 
