@@ -1,6 +1,5 @@
 import json
 from typing import NoReturn
-
 from fpdf import FPDF
 
 
