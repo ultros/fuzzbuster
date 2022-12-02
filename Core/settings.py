@@ -57,8 +57,8 @@ def trace(func):
 def fuzz_time(func):
     def wrapper(*args, **kwargs):
         print(f'{Colors.NOTE}[+] Fuzzer started at {datetime.datetime.today()}{Colors.END}')
-        func(*args, **kwargs)
+        responses = func(*args, **kwargs)
         print(f'{Colors.NOTE}[+] Fuzzer completed at {datetime.datetime.today()}{Colors.END}')
         print(f'[+] Closing...')
-
+        return responses
     return wrapper
