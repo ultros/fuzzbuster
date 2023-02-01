@@ -10,7 +10,7 @@ class Process:
     def format_url(self, url: str, keyword: str) -> str | None:
         """Returns a formatted URL to fuzz/directory bust."""
         if "http" not in url:
-            print(f"Add your protocol (http/https) to the URL ({url}) to fuzz.")
+            print(f"Add a protocol (http/https) to the URL ({url}).")
             sys.exit()
         try:
             if re.search("FUZZ", url):
