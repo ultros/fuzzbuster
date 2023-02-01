@@ -2,9 +2,8 @@
 import argparse
 import concurrent.futures
 import logging
-import os
 from datetime import datetime as dt
-
+import os
 import Core.network
 import Core.process
 import Core.reports
@@ -55,6 +54,11 @@ def fuzz(url: str, wordlist: str) -> list:
                 i += 1
                 print(end='\x1b[2K')
                 print(f"{i} of {total_urls}", end="\r")  # to end of line
+
+        except KeyboardInterrupt:
+            print("\n[!] Keyboard Interrupt Detected\n[!] Gracefully closing after threads finish... "
+                  "(or press ctrl-c again)")
+            exit(0)
 
         except Exception as e:
             print("[!] Is the web server running?")
