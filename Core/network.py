@@ -6,7 +6,7 @@ import Core.settings
 
 class Network:
     def __init__(self):
-        pass
+        self.retry_addresses = []
 
     # @Core.settings.trace
     def perform_request(self, url: str) -> str | None:
@@ -16,39 +16,33 @@ class Network:
             url -- The URL to request.
         Returns the HTTP status code of that request.
         """
-        if Core.settings.SocksProxy.enable_socks and Core.settings.TorProxy.enable_socks:
-            print("[!] WARNING: Both SOCKS5 and Tor are enabled in settings. Utilize only one proxy type.")
-            exit(0)
+        try:
+            if Core.settings.SocksProxy.enable_socks and Core.settings.TorProxy.enable_socks:
+                print("[!] WARNING: Both SOCKS5 and Tor are enabled in settings. Utilize only one proxy type.")
+                exit()
 
-        headers = {'user-agent': random.choice(Core.settings.UserAgents.user_agents)}
-        response = None
+            headers = {'user-agent': random.choice(Core.settings.UserAgents.user_agents)}
+            response = None
 
-        if Core.settings.SocksProxy.enable_socks:
-            proxy = random.choice(Core.settings.SocksProxy.socks_list)
-            proxies = {'http': proxy, 'https': proxy}
-            try:
-                response = requests.get(url=url, proxies=proxies, headers=headers,
-                                        timeout=Core.settings.Settings.timeout)
-            except Exception as e:
-                # print(e)
-                pass
+            if Core.settings.SocksProxy.enable_socks:
+                proxy = random.choice(Core.settings.SocksProxy.socks_list)
+                proxies = {'http': proxy, 'https': proxy}
 
-        if Core.settings.TorProxy.enable_socks:
-            proxy = Core.settings.TorProxy.tor_proxy
-            proxies = {'http': proxy, 'https': proxy}
-            try:
-                response = requests.get(url=url, proxies=proxies, headers=headers,
-                                        timeout=Core.settings.Settings.timeout)
-            except Exception as e:
-                # print(e)
-                pass
+                response = requests.get(url=url, proxies=proxies, headers=headers,timeout=Core.settings.Settings.timeout)
 
-        if not Core.settings.TorProxy.enable_socks and not Core.settings.SocksProxy.enable_socks:
-            try:
+            if Core.settings.TorProxy.enable_socks:
+                proxy = Core.settings.TorProxy.tor_proxy
+                proxies = {'http': proxy, 'https': proxy}
+
+                response = requests.get(url=url, proxies=proxies, headers=headers, timeout=Core.settings.Settings.timeout)
+
+
+            if not Core.settings.TorProxy.enable_socks and not Core.settings.SocksProxy.enable_socks:
                 response = requests.get(url=url, headers=headers, timeout=Core.settings.Settings.timeout)
-            except Exception as e:
-                # print(e)
-                pass
+
+        except requests.exceptions.ConnectTimeout:
+            self.retry_addresses.append(url)
+
 
         try:
             match response.status_code:

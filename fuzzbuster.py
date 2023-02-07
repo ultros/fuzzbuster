@@ -75,6 +75,9 @@ def fuzz(url: str, wordlist: str) -> list:
             f" total URL entries.")
         for url in valid_response_list:
             logging.info(f" -  {url}")
+        for url in networking.retry_addresses:
+            logging.info(f"[!] Failed to connect: {url}")
+            print(f"[!] Failed to connect: {url}")
 
         return valid_response_list
 
@@ -106,7 +109,7 @@ def main():
         wordlist = args.wordlist
     else:
         print(f"[!] Invalid wordlist")
-        exit(1)
+        exit()
 
     responses = fuzz(url, wordlist)
 

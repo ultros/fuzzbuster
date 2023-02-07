@@ -8,7 +8,8 @@ class Settings:
 
 class SocksProxy:
     enable_socks = False
-    socks_list = ''
+    # ['socks5://user:password@host:port', 'socks4://178.212.48.70:1080']
+    socks_list = ['']
 
 
 class TorProxy:
