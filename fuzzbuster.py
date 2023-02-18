@@ -4,6 +4,9 @@ import concurrent.futures
 import logging
 from datetime import datetime as dt
 import os
+
+import urllib3.exceptions
+
 import Core.network
 import Core.process
 import Core.reports
@@ -44,9 +47,11 @@ def fuzz(url: str, wordlist: str) -> list:
             total_urls += 1
             print(f"Total URLs: {total_urls}...", end="\r")
 
+
         try:
             for future in concurrent.futures.as_completed(futures):
                 response = future.result()
+
                 if response is not None:
                     valid_response_list.append(response)
                     print(f"{response}")
@@ -61,10 +66,12 @@ def fuzz(url: str, wordlist: str) -> list:
             exit(0)
 
         except Exception as e:
-            print("[!] Is the web server running?")
-            print(f"[!] {e}")
+            print(e)
             i += 1
-            pass
+
+        except urllib3.exceptions.NewConnectionError:
+            print("[!] Is the web server running?")
+            i += 1
 
         print(end='\x1b[2K')
         print(f"{i} of {total_urls}")

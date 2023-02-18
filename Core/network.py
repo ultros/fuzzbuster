@@ -1,6 +1,8 @@
 import random
 import re
 import requests
+import urllib3.exceptions
+
 import Core.settings
 
 
@@ -38,10 +40,16 @@ class Network:
 
 
             if not Core.settings.TorProxy.enable_socks and not Core.settings.SocksProxy.enable_socks:
-                response = requests.get(url=url, headers=headers, timeout=Core.settings.Settings.timeout)
+                try:
+                    response = requests.get(url=url, headers=headers, timeout=Core.settings.Settings.timeout)
+                except Exception as e:
+                    # e == urllib3.exceptions.NewConnectionError:
+                    pass
+
 
         except requests.exceptions.ConnectTimeout:
             self.retry_addresses.append(url)
+            pass
 
 
         try:
