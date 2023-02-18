@@ -2,8 +2,8 @@ import datetime
 
 
 class Settings:
-    max_workers = 30
-    timeout = (10, 10)  # (connecting timeout, reading timeout)
+    max_workers = 50
+    timeout = (3, 3)  # (connecting timeout, reading timeout)
 
 
 class SocksProxy:

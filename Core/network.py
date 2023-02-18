@@ -18,38 +18,27 @@ class Network:
             url -- The URL to request.
         Returns the HTTP status code of that request.
         """
-        try:
-            if Core.settings.SocksProxy.enable_socks and Core.settings.TorProxy.enable_socks:
-                print("[!] WARNING: Both SOCKS5 and Tor are enabled in settings. Utilize only one proxy type.")
-                exit()
 
-            headers = {'user-agent': random.choice(Core.settings.UserAgents.user_agents)}
-            response = None
+        if Core.settings.SocksProxy.enable_socks and Core.settings.TorProxy.enable_socks:
+            print("[!] WARNING: Both SOCKS5 and Tor are enabled in settings. Utilize only one proxy type.")
+            exit()
 
-            if Core.settings.SocksProxy.enable_socks:
-                proxy = random.choice(Core.settings.SocksProxy.socks_list)
-                proxies = {'http': proxy, 'https': proxy}
+        headers = {'user-agent': random.choice(Core.settings.UserAgents.user_agents)}
+        proxies = ''
 
-                response = requests.get(url=url, proxies=proxies, headers=headers,timeout=Core.settings.Settings.timeout)
+        if Core.settings.SocksProxy.enable_socks:
+            proxy = random.choice(Core.settings.SocksProxy.socks_list)
+            proxies = {'http': proxy, 'https': proxy}
 
-            if Core.settings.TorProxy.enable_socks:
-                proxy = Core.settings.TorProxy.tor_proxy
-                proxies = {'http': proxy, 'https': proxy}
-
-                response = requests.get(url=url, proxies=proxies, headers=headers, timeout=Core.settings.Settings.timeout)
-
-
-            if not Core.settings.TorProxy.enable_socks and not Core.settings.SocksProxy.enable_socks:
-                response = requests.get(url=url, headers=headers, timeout=Core.settings.Settings.timeout)
-
-
-
-        except requests.exceptions.ConnectTimeout:
-            self.retry_addresses.append(url)
-            pass
-
+        if Core.settings.TorProxy.enable_socks:
+            proxy = Core.settings.TorProxy.tor_proxy
+            proxies = {'http': proxy, 'https': proxy}
 
         try:
+            response = requests.get(url=url, headers=headers, proxies=proxies, timeout=Core.settings.Settings.timeout)
+        except Exception as e:
+            return
+        else:
             match response.status_code:
                 case 200:
                     if re.search == "":
@@ -79,6 +68,4 @@ class Network:
                     return
                 case _:
                     pass
-        except Exception as e:
-            # print(e)
             return

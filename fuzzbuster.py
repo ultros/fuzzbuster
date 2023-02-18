@@ -47,46 +47,30 @@ def fuzz(url: str, wordlist: str) -> list:
             total_urls += 1
             print(f"Total URLs: {total_urls}...", end="\r")
 
+        for future in concurrent.futures.as_completed(futures):
+            response = future.result()
 
-        try:
-            for future in concurrent.futures.as_completed(futures):
-                response = future.result()
+            if response is not None:
+                valid_response_list.append(response)
+                print(f"{response}")
 
-                if response is not None:
-                    valid_response_list.append(response)
-                    print(f"{response}")
-
-                i += 1
-                print(end='\x1b[2K')
-                print(f"{i} of {total_urls}", end="\r")  # to end of line
-
-        except KeyboardInterrupt:
-            print("\n[!] Keyboard Interrupt Detected\n[!] Gracefully closing after threads finish... "
-                  "(or press ctrl-c again)")
-            exit(0)
-
-        except Exception as e:
-            print(e)
             i += 1
-
-        except urllib3.exceptions.NewConnectionError:
-            print("[!] Is the web server running?")
-            i += 1
-
-        print(end='\x1b[2K')
-        print(f"{i} of {total_urls}")
+            print(end='\x1b[2K')
+            print(f"{i} of {total_urls}", end="\r")  # to end of line
 
         assert type(valid_response_list) == list
         logging.info(
             f"{dt.now()} ({original_fuzzer_url}) {len(valid_response_list)} resolved URLs returned from {total_urls}"
             f" total URL entries.")
+
         for url in valid_response_list:
             logging.info(f" -  {url}")
+
         for url in networking.retry_addresses:
             logging.info(f"[!] Failed to connect: {url}")
             print(f"[!] Failed to connect: {url}")
 
-        return valid_response_list
+    return valid_response_list
 
 
 def main():
