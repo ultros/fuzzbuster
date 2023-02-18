@@ -40,11 +40,8 @@ class Network:
 
 
             if not Core.settings.TorProxy.enable_socks and not Core.settings.SocksProxy.enable_socks:
-                try:
-                    response = requests.get(url=url, headers=headers, timeout=Core.settings.Settings.timeout)
-                except Exception as e:
-                    # e == urllib3.exceptions.NewConnectionError:
-                    pass
+                response = requests.get(url=url, headers=headers, timeout=Core.settings.Settings.timeout)
+
 
 
         except requests.exceptions.ConnectTimeout:
