@@ -17,7 +17,7 @@ class PdfReport(Report):
         pdf = FPDF(orientation='P', unit='pt', format='A4')
         pdf.add_page()
 
-        pdf.image("assets/images/cyber-tutorials-org-logo-small.png", w=76, h=96)
+        #pdf.image("assets/images/cyber-tutorials-org-logo-small.png", w=76, h=96)
         pdf.set_font(family='Times', size=24, style='B')
         pdf.cell(w=0, h=80, txt=self.target_address, border=0, align="L", ln=1)
 
