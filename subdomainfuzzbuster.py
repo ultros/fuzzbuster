@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3.11
 
 import argparse
 import concurrent.futures
@@ -56,8 +56,8 @@ def prepare_wordlist(url: str, wordlist: str) -> Tuple[list, list, int]:
 def process_host(host: str, url: str) -> str | None:
     headers = {'Host': host}
     try:
-        res = requests.get(url, headers=headers, timeout=3)
-        origin_response = requests.get(url, timeout=3)
+        res = requests.get(url, headers=headers, timeout=1)
+        origin_response = requests.get(url, timeout=1)
 
         if res.status_code == 200:
             if len(origin_response.text) != len(res.text):
