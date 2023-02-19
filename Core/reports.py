@@ -1,6 +1,7 @@
 import json
 from typing import NoReturn
 from fpdf import FPDF
+import pathlib
 
 
 class Report:
@@ -16,8 +17,8 @@ class PdfReport(Report):
     def generate_pdf_report(self) -> NoReturn:
         pdf = FPDF(orientation='P', unit='pt', format='A4')
         pdf.add_page()
-
-        #pdf.image("assets/images/cyber-tutorials-org-logo-small.png", w=76, h=96)
+        image_path = f"{pathlib.Path(__file__).parent.parent}/assets/images/cybersecurity-cybertutorials-logo.png"
+        pdf.image(image_path, w=180, h=171)
         pdf.set_font(family='Times', size=24, style='B')
         pdf.cell(w=0, h=80, txt=self.target_address, border=0, align="L", ln=1)
 
