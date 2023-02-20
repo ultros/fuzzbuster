@@ -41,9 +41,6 @@ class Network:
         else:
             match response.status_code:
                 case 200:
-                    if re.search('', response.text):
-                        # Handle 200 empty page
-                        return
                     if re.search('File not found', response.text):
                         return
                     if re.search("Error 404", response.text):
