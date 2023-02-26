@@ -1,15 +1,18 @@
 import datetime
 
+# globals
+global PAGE_SIZE
+global HOST
 
 class Settings:
-    max_workers = 50
+    max_workers = 100
     timeout = (3, 3)  # (connecting timeout, reading timeout)
 
 
 class SocksProxy:
     enable_socks = False
     # ['socks5://user:password@host:port', 'socks4://178.212.48.70:1080']
-    socks_list = ['']
+    socks_list = []
 
 
 class TorProxy:

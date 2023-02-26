@@ -1,8 +1,6 @@
 import random
 import re
 import requests
-import urllib3.exceptions
-
 import Core.settings
 
 
@@ -23,7 +21,10 @@ class Network:
             print("[!] WARNING: Both SOCKS5 and Tor are enabled in settings. Utilize only one proxy type.")
             exit()
 
-        headers = {'user-agent': random.choice(Core.settings.UserAgents.user_agents)}
+        headers = {
+            'user-agent': random.choice(Core.settings.UserAgents.user_agents),
+            # 'HOST':Core.settings.Settings.HOST,
+        }
         proxies = ''
 
         if Core.settings.SocksProxy.enable_socks:
@@ -33,6 +34,24 @@ class Network:
         if Core.settings.TorProxy.enable_socks:
             proxy = Core.settings.TorProxy.tor_proxy
             proxies = {'http': proxy, 'https': proxy}
+
+        # if Core.settings.Settings.HOST == "FUZZ":
+        #     try:
+        #         wordlist = open(self.wordlist, 'r')
+        #     except Exception as e:
+        #         print(e)
+        #
+        #     try:
+        #         for word in wordlist:
+        #             temp_url = self.format_url(url, word)
+        #             if temp_url is not None:
+        #                 headers = {
+        #                     'HOST': word,
+        #                 }
+        #             else:
+        #                 exit(0)
+        #     except Exception as e:
+        #         print(e)
 
         try:
             response = requests.get(url=url, headers=headers, proxies=proxies, timeout=Core.settings.Settings.timeout)
@@ -53,7 +72,10 @@ class Network:
                         # golang
                         return
                     else:
-                        return f"[200] Discovered: {url}"
+                        if str(len(response.content)) in Core.settings.Settings.PAGE_SIZE:
+                            return
+                        else:
+                            return f"[200] Discovered: {url} [Size: {len(response.content)}]"
                 case 302:
                     return f"[302] Temporary redirect: {url}"
                 case 301:

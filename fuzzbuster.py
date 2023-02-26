@@ -4,9 +4,6 @@ import concurrent.futures
 import logging
 from datetime import datetime as dt
 import os
-
-import urllib3.exceptions
-
 import Core.network
 import Core.process
 import Core.reports
@@ -25,6 +22,7 @@ def print_banner():
 
 
 print_banner()
+
 
 
 @Core.settings.fuzz_time
@@ -90,6 +88,9 @@ def main():
     parser.add_argument("--json", required=False, type=str,
                         default=None, dest="json",
                         help='Specify report name')
+    parser.add_argument("--size", required=False, nargs='+',
+                        default=[None], dest="page_size",
+                        help='Page sizes to ignore (--size 15 2010 8)')
 
     args = parser.parse_args()
 
@@ -102,6 +103,8 @@ def main():
         print(f"[!] Invalid wordlist")
         exit()
 
+    Core.settings.Settings.PAGE_SIZE = args.page_size
+    # Core.settings.Settings.HOST = "FUZZ"
     responses = fuzz(url, wordlist)
 
     if args.pdf is not None:

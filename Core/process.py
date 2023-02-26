@@ -13,6 +13,8 @@ class Process:
             print(f"Add a protocol (http/https) to the URL ({url}).")
             sys.exit()
         try:
+            # if Core.settings.Settings.HOST:
+            #     formatted_url = url
             if re.search("FUZZ", url):
                 formatted_url = url.replace("FUZZ", keyword.strip())
             else:
