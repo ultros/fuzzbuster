@@ -2,7 +2,6 @@ import datetime
 
 # globals
 global PAGE_SIZE
-global HOST
 
 class Settings:
     max_workers = 100

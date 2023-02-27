@@ -1,7 +1,7 @@
 import random
 import re
 import requests
-import Core.settings
+import Core
 
 
 class Network:
@@ -9,7 +9,7 @@ class Network:
         self.retry_addresses = []
 
     # @Core.settings.trace
-    def perform_request(self, url: str) -> str | None:
+    def perform_request(self, url: str, host: str=None) -> str | None:
         """Receives a URL to request. Performs the request with or without proxies.
 
         Keyword arguments:
@@ -23,7 +23,6 @@ class Network:
 
         headers = {
             'user-agent': random.choice(Core.settings.UserAgents.user_agents),
-            # 'HOST':Core.settings.Settings.HOST,
         }
         proxies = ''
 
@@ -34,24 +33,6 @@ class Network:
         if Core.settings.TorProxy.enable_socks:
             proxy = Core.settings.TorProxy.tor_proxy
             proxies = {'http': proxy, 'https': proxy}
-
-        # if Core.settings.Settings.HOST == "FUZZ":
-        #     try:
-        #         wordlist = open(self.wordlist, 'r')
-        #     except Exception as e:
-        #         print(e)
-        #
-        #     try:
-        #         for word in wordlist:
-        #             temp_url = self.format_url(url, word)
-        #             if temp_url is not None:
-        #                 headers = {
-        #                     'HOST': word,
-        #                 }
-        #             else:
-        #                 exit(0)
-        #     except Exception as e:
-        #         print(e)
 
         try:
             response = requests.get(url=url, headers=headers, proxies=proxies, timeout=Core.settings.Settings.timeout)
@@ -90,3 +71,14 @@ class Network:
                 case _:
                     pass
             return
+
+    def get_proxies(self):
+        url = "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=socks4,socks5&" \
+              "timeout=100&country=all&ssl=all&anonymity=elite"
+        try:
+            response = requests.get(url)
+        except Exception as e:
+            print(e)
+            exit(0)
+
+        return response.text

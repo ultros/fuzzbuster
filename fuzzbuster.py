@@ -73,10 +73,10 @@ def fuzz(url: str, wordlist: str) -> list:
 
 def main():
     parser = argparse.ArgumentParser(description="URL Fuzzer (E.g. www.google.com/search?q=FUZZ")
-    parser.add_argument('-u', '--url', required=True, type=str,
+    parser.add_argument('-u', '--url', required=False, type=str,
                         default=None, dest="url",
                         help="Specify URL to fuzz (e.g. www.google.com/search?q=FUZZ")
-    parser.add_argument('-w', '--wordlist', required=True, type=str,
+    parser.add_argument('-w', '--wordlist', required=False, type=str,
                         default=None, dest="wordlist",
                         help='Specify wordlist to use (e.g. /usr/share/wordlists/dirb/commmon.txt)')
     parser.add_argument("--pdf", required=False, type=str,
@@ -91,8 +91,16 @@ def main():
     parser.add_argument("--size", required=False, nargs='+',
                         default=[None], dest="page_size",
                         help='Page sizes to ignore (--size 15 2010 8)')
+    parser.add_argument("--get_proxies", dest="proxies", required=False,
+                        action='store_true',
+                        help='Gather socks4/socks5 elite proxies.')
 
     args = parser.parse_args()
+
+    if args.proxies:
+        network = Core.network.Network()
+        print(network.get_proxies())
+        exit(0)
 
     if args.url is not None:
         url = args.url
@@ -101,10 +109,9 @@ def main():
         wordlist = args.wordlist
     else:
         print(f"[!] Invalid wordlist")
-        exit()
 
     Core.settings.Settings.PAGE_SIZE = args.page_size
-    # Core.settings.Settings.HOST = "FUZZ"
+
     responses = fuzz(url, wordlist)
 
     if args.pdf is not None:
