@@ -19,7 +19,7 @@ class Network:
 
         if Core.settings.SocksProxy.enable_socks and Core.settings.TorProxy.enable_socks:
             print("[!] WARNING: Both SOCKS5 and Tor are enabled in settings. Utilize only one proxy type.")
-            exit()
+            exit(0)
 
         headers = {
             'user-agent': random.choice(Core.settings.UserAgents.user_agents),
@@ -79,6 +79,6 @@ class Network:
             response = requests.get(url)
         except Exception as e:
             print(e)
-            exit(0)
+            exit(1)
 
         return response.text
