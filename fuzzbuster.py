@@ -2,8 +2,9 @@
 import argparse
 import concurrent.futures
 import logging
-from datetime import datetime as dt
 import os
+from datetime import datetime as dt
+
 import Core.network
 import Core.process
 import Core.reports
@@ -32,7 +33,6 @@ def fuzz(url: str, wordlist: str) -> list:
     processing = Core.process.Process(wordlist)
     formatted_url_list = processing.format_wordlist(url)
 
-    # print(id(formatted_url_list))
     total_urls = 0
     i = 0
     valid_response_list = []
