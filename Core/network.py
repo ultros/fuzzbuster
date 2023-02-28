@@ -1,6 +1,8 @@
 import random
 import re
+
 import requests
+
 import Core
 
 
@@ -79,6 +81,7 @@ class Network:
             response = requests.get(url)
         except Exception as e:
             print(e)
+
             exit(1)
 
         return response.text
