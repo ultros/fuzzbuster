@@ -24,8 +24,6 @@ def print_banner():
 
 print_banner()
 
-
-
 @Core.settings.fuzz_time
 def fuzz(url: str, wordlist: str) -> list:
     original_fuzzer_url = url
