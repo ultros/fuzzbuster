@@ -10,8 +10,7 @@ class Process:
     def format_url(self, url: str, keyword: str) -> str | None:
         """Returns a formatted URL to fuzz/directory bust."""
         if "http" not in url:
-            print(f"Add a protocol (http/https) to the URL ({url}).")
-            sys.exit()
+            sys.exit(f"Add a protocol (http/https) to the URL ({url}).")
         try:
             # if Core.settings.Settings.HOST:
             #     formatted_url = url
@@ -44,7 +43,7 @@ class Process:
                 if temp_url is not None:
                     valid_urls.append(temp_url)
                 else:
-                    exit(0)
+                    sys.exit(0)
 
         except Exception as e:
             print(e)

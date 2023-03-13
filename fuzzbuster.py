@@ -3,6 +3,7 @@ import argparse
 import concurrent.futures
 import logging
 import os
+import sys
 from datetime import datetime as dt
 
 import Core.network
@@ -92,13 +93,18 @@ def main():
     parser.add_argument("--get_proxies", dest="proxies", required=False,
                         action='store_true',
                         help='Gather socks4/socks5 elite proxies.')
+    parser.add_argument("-sc", dest="session_cookie", required=False,
+                        help='Specify a session cookie.')
 
     args = parser.parse_args()
 
     if args.proxies:
         network = Core.network.Network()
         print(network.get_proxies())
-        exit(0)
+        sys.exit(0)
+
+    if args.session_cookie:
+        Core.settings.Settings.session_cookie = args.session_cookie
 
     if args.url is not None:
         url = args.url

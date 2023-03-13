@@ -6,6 +6,7 @@ global PAGE_SIZE
 class Settings:
     max_workers = 100
     timeout = (3, 3)  # (connecting timeout, reading timeout)
+    session_cookie = {}
 
 
 class SocksProxy:
@@ -53,7 +54,6 @@ def trace(func):
         original_result = func(*args, **kwargs)
         print(f'TRACE: {func.__name__}() returned {original_result}')
         return original_result
-
     return wrapper
 
 
