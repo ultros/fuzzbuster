@@ -1,9 +1,8 @@
 import random
 import re
 import sys
-
+import urllib3
 import requests
-
 import Core.settings
 
 
@@ -19,7 +18,6 @@ class Network:
             url -- The URL to request.
         Returns the HTTP status code of that request.
         """
-
         if Core.settings.SocksProxy.enable_socks and Core.settings.TorProxy.enable_socks:
             sys.exit("[!] WARNING: Both SOCKS5 and Tor are enabled in settings. Utilize only one proxy type.")
 
@@ -48,8 +46,11 @@ class Network:
             proxies = {'http': proxy, 'https': proxy}
 
         try:
+            urllib3.disable_warnings()  # Disable InsecureRequestWarning when attempting HTTPS
             response = requests.get(url=url, headers=headers, cookies=cookies, proxies=proxies,
-                                    timeout=Core.settings.Settings.timeout)
+                                    timeout=Core.settings.Settings.timeout, verify=False)
+        except requests.exceptions.SSLError:
+            print("SSLERROR")
         except Exception as e:
             return
         else:
