@@ -21,9 +21,14 @@ class Network:
         if Core.settings.SocksProxy.enable_socks and Core.settings.TorProxy.enable_socks:
             sys.exit("[!] WARNING: Both SOCKS5 and Tor are enabled in settings. Utilize only one proxy type.")
 
-        headers = {
-            'user-agent': random.choice(Core.settings.UserAgents.user_agents),
-        }
+        if Core.settings.CUSTOM_USER_AGENT:
+            headers = {
+                'user-agent': Core.settings.CUSTOM_USER_AGENT
+            }
+        else:
+            headers = {
+                'user-agent': random.choice(Core.settings.UserAgents.user_agents),
+            }
 
         cookies = ''
 

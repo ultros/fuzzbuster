@@ -95,6 +95,8 @@ def main():
                         help='Gather socks4/socks5 elite proxies.')
     parser.add_argument("-sc", dest="session_cookie", required=False,
                         help='Specify a session cookie.')
+    parser.add_argument("-cua", dest="custom_user_agent", required=False,
+                        help='Set a custom user agent.')
 
     args = parser.parse_args()
 
@@ -105,6 +107,9 @@ def main():
 
     if args.session_cookie:
         Core.settings.Settings.session_cookie = args.session_cookie
+
+    if args.custom_user_agent:
+        Core.settings.CUSTOM_USER_AGENT = args.custom_user_agent
 
     if args.url is not None:
         url = args.url

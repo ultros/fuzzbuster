@@ -2,6 +2,9 @@ import datetime
 
 # globals
 global PAGE_SIZE
+global CUSTOM_USER_AGENT
+CUSTOM_USER_AGENT = None
+
 
 class Settings:
     max_workers = 100
