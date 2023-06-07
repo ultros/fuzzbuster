@@ -118,6 +118,7 @@ def main():
         wordlist = args.wordlist
     else:
         print(f"[!] Invalid wordlist")
+        exit(1)
 
     Core.settings.Settings.PAGE_SIZE = args.page_size
 
