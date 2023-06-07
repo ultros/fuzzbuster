@@ -5,7 +5,7 @@ import logging
 import os
 import sys
 from datetime import datetime as dt
-
+from termcolor import colored
 import Core.network
 import Core.process
 import Core.reports
@@ -120,6 +120,19 @@ def main():
         print(f"[!] Invalid wordlist")
 
     Core.settings.Settings.PAGE_SIZE = args.page_size
+
+    print(f"""
+    SETTINGS VERIFICATION
+    {colored(f"[+] URL set to: {url}", "yellow")}
+    {colored(f"[+] Wordlist set to: {wordlist}", "yellow")}
+    [+] Session Cookie: {Core.settings.Settings.session_cookie}
+    {colored(f"[+] Custom User-Agent: {Core.settings.CUSTOM_USER_AGENT}", "red")}
+    [+] Page size(s) to ignore (comma-separated): {Core.settings.Settings.PAGE_SIZE[0]}
+    """)
+
+    answer = input("[?] Does this look correct (Y/n) > ")
+    if answer == "n":
+        exit(0)
 
     responses = fuzz(url, wordlist)
 
