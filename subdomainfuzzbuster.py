@@ -1,14 +1,15 @@
 #!/usr/bin/env python3.11
-
+from termcolor import colored
 import argparse
 import concurrent.futures
 import logging
 import os
+import random
 import re
 from datetime import datetime as dt
 from typing import Tuple
-
 import requests
+import Core.settings
 
 logging.basicConfig(filename="log.txt", encoding='utf-8', level=logging.INFO, format='')
 
@@ -54,10 +55,14 @@ def prepare_wordlist(url: str, wordlist: str) -> Tuple[list, list, int]:
 
 
 def process_host(host: str, url: str) -> str | None:
-    headers = {'Host': host}
+    if Core.settings.CUSTOM_USER_AGENT:
+        headers = {'Host': host, 'User-Agent': Core.settings.CUSTOM_USER_AGENT}
+    else:
+        headers = {'Host': host, 'User-Agent': random.choice(Core.settings.UserAgents.user_agents)}
+
     try:
         res = requests.get(url, headers=headers, timeout=1)
-        origin_response = requests.get(url, timeout=1)
+        origin_response = requests.get(url, headers=headers, timeout=1)
 
         if res.status_code == 200:
             if len(origin_response.text) != len(res.text):
@@ -128,7 +133,13 @@ def main() -> None:
                         default=None,
                         help='Specify wordlist to use (e.g. /usr/share/wordlists/dirb/big.txt)')
 
+    parser.add_argument('-cua', required=False, dest='custom_user_agent',
+                        help='Add a custom user agent to your queries.')
+
     args = parser.parse_args()
+
+    if args.custom_user_agent:
+        Core.settings.CUSTOM_USER_AGENT = args.custom_user_agent
 
     if args.url is not None:
         url = args.url
@@ -141,6 +152,18 @@ def main() -> None:
 
     if args.host is not None:
         host = args.host
+
+    print(f"""
+    SETTINGS VERIFICATION
+    {colored(f"[+] Host set to: {host}", "red")}
+    {colored(f"[+] URL set to: {url}", "yellow")}
+    {colored(f"[+] Wordlist set to: {wordlist}", "yellow")}
+    {colored(f"[+] Custom User-Agent: {Core.settings.CUSTOM_USER_AGENT}", "red")}
+    """)
+
+    answer = input("[?] Does this look correct (Y/n) > ")
+    if answer == "n":
+        exit(0)
 
     fuzz_subdomains(host, url, wordlist)
 
