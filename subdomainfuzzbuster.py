@@ -10,6 +10,7 @@ from datetime import datetime as dt
 from typing import Tuple
 import requests
 import Core.settings
+from pathlib import Path
 
 logging.basicConfig(filename="log.txt", encoding='utf-8', level=logging.INFO, format='')
 
@@ -157,12 +158,12 @@ def main() -> None:
     SETTINGS VERIFICATION
     {colored(f"[+] Host set to: {host}", "red")}
     {colored(f"[+] URL set to: {url}", "yellow")}
-    {colored(f"[+] Wordlist set to: {wordlist}", "yellow")}
+    {colored(f"[+] Wordlist set to: {Path.absolute(Path(wordlist))}", "yellow")}
     {colored(f"[+] Custom User-Agent: {Core.settings.CUSTOM_USER_AGENT}", "red")}
     """)
 
-    answer = input("[?] Does this look correct (Y/n) > ")
-    if answer == "n":
+    answer = input("[?] Does this look correct (Y/n) > ") or "y"
+    if not answer.lower() == "y":
         exit(0)
 
     fuzz_subdomains(host, url, wordlist)

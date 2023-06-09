@@ -4,6 +4,7 @@ import concurrent.futures
 import logging
 import os
 import sys
+from pathlib import Path
 from datetime import datetime as dt
 from termcolor import colored
 import Core.network
@@ -125,14 +126,14 @@ def main():
     print(f"""
     SETTINGS VERIFICATION
     {colored(f"[+] URL set to: {url}", "yellow")}
-    {colored(f"[+] Wordlist set to: {wordlist}", "yellow")}
+    {colored(f"[+] Wordlist set to: {Path.absolute(Path(wordlist))}", "yellow")}
     [+] Session Cookie: {Core.settings.Settings.session_cookie}
     {colored(f"[+] Custom User-Agent: {Core.settings.CUSTOM_USER_AGENT}", "red")}
     [+] Page size(s) to ignore (comma-separated): {Core.settings.Settings.PAGE_SIZE[0]}
     """)
 
-    answer = input("[?] Does this look correct (Y/n) > ")
-    if answer == "n":
+    answer = input("[?] Does this look correct (Y/n) > ") or "y"
+    if not answer.lower() == "y":
         exit(0)
 
     responses = fuzz(url, wordlist)

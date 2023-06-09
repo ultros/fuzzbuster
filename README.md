@@ -2,26 +2,29 @@
 Concurrent URL fuzzer and directory buster (i.e. parameters, queries, and directories).
 
 ### Query:
+    $ fuzzbuster.py -u http://soccer.htb/FUZZ -w /usr/share/wordlists/dirb/small.txt --size 1,23 123 -cua "test" 
 
-#### $ python3 fuzzbuster.py -u https://www.google.com/search?q=FUZZ -w /usr/share/wordlists/dirb/small.txt
+    SETTINGS VERIFICATION
+    [+] URL set to: https://soccer.htb/FUZZ
+    [+] Wordlist set to: /usr/share/wordlists/dirb/small.txt
+    [+] Session Cookie: {}
+    [+] Custom User-Agent: test
+    [+] Page size(s) to ignore: 1,23
+  
+    [?] Does this look correct (Y/n) > 
 
-    Total URLs to fuzz: 961  
-    Total invalid words in wordlist: 0  
-    [200] Discovered: https://www.google.com/search?q=00  
-    [200] Discovered: https://www.google.com/search?q=0  
-    [200] Discovered: https://www.google.com/search?q=20  
-    [200] Discovered: https://www.google.com/search?q=1  
- 
 ...
 
 ### Subdomain/VirtualHost:
+    $ subdomainfuzzbuster.py --host FUZZ.soccer.htb -u http://soccer.htb -w /usr/share/wordlists/dirb/big.txt
 
-#### $ python3 subdomainfuzzbuster.py --host "preprod-FUZZ.trick.htb" -u http://trick.htb -w /usr/share/wordlists/dirb/small.txt
-
-    Total URLs to fuzz: 961  
-    Total invalid words in wordlist: 0  
-    Found preprod-marketing.trick.htb - 200  
-    Found preprod-payroll.trick.htb - 200  
+    SETTINGS VERIFICATION
+    [+] Host set to: FUZZ.soccer.htb
+    [+] URL set to: http://soccer.htb
+    [+] Wordlist set to: /usr/share/wordlists/dirb/big.txt
+    [+] Custom User-Agent: None
+    
+    [?] Does this look correct (Y/n) > y
 
 ...
 
