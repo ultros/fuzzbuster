@@ -34,7 +34,7 @@ def print_banner():
 """
     ]
     for line in banner:
-        print(line)
+        print(colored(line, 'cyan', attrs=['bold']))
 
 
 print_banner()
@@ -133,7 +133,10 @@ def main():
 
     if args.proxies:
         network = Core.network.Network()
-        print(network.get_proxies())
+        print("[+] Elite SOCKS4/SOCK5 Proxies")
+        print("---")
+        print(network.get_proxies().strip())
+        print("---")
         sys.exit(0)
 
     if args.session_cookie:
@@ -158,11 +161,11 @@ def main():
     {colored(f"[+] URL set to: {url}", "yellow")}
     {colored(f"[+] Wordlist set to: {Path.absolute(Path(wordlist))}", "yellow")}
     [+] Session Cookie: {Core.settings.Settings.session_cookie}
-    {colored(f"[+] Custom User-Agent: {Core.settings.CUSTOM_USER_AGENT}", "red")}
+    {colored(f"[+] Custom User-Agent: {Core.settings.CUSTOM_USER_AGENT}", "yellow")}
     [+] Page size(s) to ignore (comma-separated): {Core.settings.Settings.PAGE_SIZE[0]}
     """)
 
-    answer = input("[?] Does this look correct (Y/n) > ") or "y"
+    answer = input(f"[?] Does this look correct ({colored('Y', attrs=['blink'])}/n) > ") or "y"
     if not answer.lower() == "y":
         sys.exit(0)
 
