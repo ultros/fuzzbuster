@@ -1,4 +1,9 @@
 #!/usr/bin/env python3.11
+
+__version__ = "1.0.0"
+__author__ = "Jesse Shelley"
+__email__ = "realjesseshelley@gmail.com"
+
 import argparse
 import concurrent.futures
 import logging
@@ -17,8 +22,16 @@ logging.basicConfig(filename="log.txt", encoding='utf-8', level=logging.INFO, fo
 
 def print_banner():
     banner = [
-        f'{Core.settings.Colors.HEADER}\u24D5\u24E4\u24E9\u24E9\u24D1\u24E4\u24E2\u24E3\u24D4\u24E1'
-        f'{Core.settings.Colors.END}'
+        """
+    ██████                                   █████                         █████                      
+   ███░░███                                 ░░███                         ░░███                       
+  ░███ ░░░  █████ ████  █████████  █████████ ░███████  █████ ████  █████  ███████    ██████  ████████ 
+ ███████   ░░███ ░███  ░█░░░░███  ░█░░░░███  ░███░░███░░███ ░███  ███░░  ░░░███░    ███░░███░░███░░███
+░░░███░     ░███ ░███  ░   ███░   ░   ███░   ░███ ░███ ░███ ░███ ░░█████   ░███    ░███████  ░███ ░░░ 
+  ░███      ░███ ░███    ███░   █   ███░   █ ░███ ░███ ░███ ░███  ░░░░███  ░███ ███░███░░░   ░███     
+  █████     ░░████████  █████████  █████████ ████████  ░░████████ ██████   ░░█████ ░░██████  █████    
+ ░░░░░       ░░░░░░░░  ░░░░░░░░░  ░░░░░░░░░ ░░░░░░░░    ░░░░░░░░ ░░░░░░     ░░░░░   ░░░░░░  ░░░░░     
+"""
     ]
     for line in banner:
         print(line)
@@ -72,7 +85,7 @@ def fuzz(url: str, wordlist: str) -> list:
 
 
 def main():
-    parser = argparse.ArgumentParser(description="URL Fuzzer (E.g. www.google.com/search?q=FUZZ")
+    parser = argparse.ArgumentParser(description="Concurrent directory, parameter, and query fuzzer.")
     parser.add_argument('-u', '--url', required=False, type=str,
                         default=None, dest="url",
                         help="Specify URL to fuzz (e.g. www.google.com/search?q=FUZZ")
@@ -98,8 +111,25 @@ def main():
                         help='Specify a session cookie.')
     parser.add_argument("-cua", dest="custom_user_agent", required=False,
                         help='Set a custom user agent.')
+    parser.add_argument("-v", "--version", required=False, action="store_true",
+                        help="Display software version.")
 
     args = parser.parse_args()
+
+    try:
+        if sys.argv[1]:
+            pass
+    except IndexError:
+        parser.print_help()
+        sys.exit(1)
+
+    if args.version:
+        print(f"""
+        fuzzbuster Version {__version__}
+        Author: {__author__}
+        Contact: {__email__}
+        """)
+        sys.exit(0)
 
     if args.proxies:
         network = Core.network.Network()
@@ -119,7 +149,7 @@ def main():
         wordlist = args.wordlist
     else:
         print(f"[!] Invalid wordlist")
-        exit(1)
+        sys.exit(1)
 
     Core.settings.Settings.PAGE_SIZE = args.page_size
 
@@ -134,7 +164,7 @@ def main():
 
     answer = input("[?] Does this look correct (Y/n) > ") or "y"
     if not answer.lower() == "y":
-        exit(0)
+        sys.exit(0)
 
     responses = fuzz(url, wordlist)
 

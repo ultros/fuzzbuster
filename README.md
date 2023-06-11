@@ -1,8 +1,43 @@
 # fuzzbuster
-Concurrent URL fuzzer and directory buster (i.e. parameters, queries, and directories).
+Concurrent URL fuzzer and directory buster (i.e. parameters, queries, directories, and files).
 
-### Query:
-    $ fuzzbuster.py -u http://soccer.htb/FUZZ -w /usr/share/wordlists/dirb/small.txt --size 1,23 123 -cua "test" 
+$ python3 fuzzbuster.py
+
+        ██████                                   █████                         █████                      
+       ███░░███                                 ░░███                         ░░███                       
+      ░███ ░░░  █████ ████  █████████  █████████ ░███████  █████ ████  █████  ███████    ██████  ████████ 
+     ███████   ░░███ ░███  ░█░░░░███  ░█░░░░███  ░███░░███░░███ ░███  ███░░  ░░░███░    ███░░███░░███░░███
+    ░░░███░     ░███ ░███  ░   ███░   ░   ███░   ░███ ░███ ░███ ░███ ░░█████   ░███    ░███████  ░███ ░░░ 
+      ░███      ░███ ░███    ███░   █   ███░   █ ░███ ░███ ░███ ░███  ░░░░███  ░███ ███░███░░░   ░███     
+      █████     ░░████████  █████████  █████████ ████████  ░░████████ ██████   ░░█████ ░░██████  █████    
+     ░░░░░       ░░░░░░░░  ░░░░░░░░░  ░░░░░░░░░ ░░░░░░░░    ░░░░░░░░ ░░░░░░     ░░░░░   ░░░░░░  ░░░░░     
+
+    usage: fuzzbuster.py [-h] [-u URL] [-w WORDLIST] [--pdf PDF] [--html HTML] [--json JSON] [--size PAGE_SIZE [PAGE_SIZE ...]] [--get_proxies] [-sc SESSION_COOKIE] [-cua CUSTOM_USER_AGENT] [-v]
+
+    Concurrent directory buster, parameter, and query fuzzer.
+
+    options:
+      -h, --help            show this help message and exit
+      -u URL, --url URL     Specify URL to fuzz (e.g. www.google.com/search?q=FUZZ
+      -w WORDLIST, --wordlist WORDLIST
+                            Specify wordlist to use (e.g. /usr/share/wordlists/dirb/commmon.txt)
+      --pdf PDF             Specify PDF report name
+      --html HTML           Specify HTML report name
+      --json JSON           Specify report name
+      --size PAGE_SIZE [PAGE_SIZE ...]
+                            Page sizes to ignore (--size 15 2010 8)
+      --get_proxies         Gather socks4/socks5 elite proxies.
+      -sc SESSION_COOKIE    Specify a session cookie.
+      -cua CUSTOM_USER_AGENT
+                            Set a custom user agent.
+      -v, --version         Display software version.
+
+...
+
+## Basic Usage
+
+### Directory/File Query:
+    $ fuzzbuster.py -u http://soccer.htb/FUZZ -w /usr/share/wordlists/dirb/small.txt --size 1,23 -cua "test" 
 
     SETTINGS VERIFICATION
     [+] URL set to: https://soccer.htb/FUZZ
