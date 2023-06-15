@@ -1,6 +1,8 @@
 import re
 import sys
 
+import Core.settings
+
 
 class Process:
     def __init__(self, wordlist: str):
@@ -39,7 +41,10 @@ class Process:
 
         try:
             for word in wordlist:
-                temp_url = self.format_url(url, word)
+                if Core.settings.TITLE:
+                    temp_url = self.format_url(url, word.title())
+                else:
+                    temp_url = self.format_url(url, word)
                 if temp_url is not None:
                     valid_urls.append(temp_url)
                 else:

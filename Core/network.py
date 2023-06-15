@@ -53,7 +53,7 @@ class Network:
         try:
             urllib3.disable_warnings()  # Disable InsecureRequestWarning when attempting HTTPS
             response = requests.get(url=url, headers=headers, cookies=cookies, proxies=proxies,
-                                    timeout=Core.settings.Settings.timeout, verify=False)
+                                    timeout=Core.settings.Settings.timeout, verify=False, allow_redirects=True)
         except requests.exceptions.SSLError:
             print("SSLERROR")
         except Exception as e:
@@ -72,11 +72,16 @@ class Network:
                     if re.search("go_gc_cycles", response.text):
                         # golang
                         return
-                    else:
-                        if str(len(response.content)) in Core.settings.Settings.PAGE_SIZE:
+
+                    if Core.settings.PAGE_SIZE != [None]:
+                        if str(len(response.content)) in Core.settings.PAGE_SIZE:
                             return
                         else:
                             return f"[200] Discovered: {url} [Size: {len(response.content)}]"
+
+                    else:
+                        return f"[200] Discovered: {url} [Size: {len(response.content)}]"
+
                 case 302:
                     return f"[302] Temporary redirect: {url}"
                 case 301:

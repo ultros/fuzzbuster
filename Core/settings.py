@@ -1,9 +1,9 @@
 import datetime
 
 # globals
-global PAGE_SIZE
-global CUSTOM_USER_AGENT
+PAGE_SIZE = None
 CUSTOM_USER_AGENT = None
+TITLE = False
 
 
 class Settings:

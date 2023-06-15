@@ -111,6 +111,9 @@ def main():
                         help='Specify a session cookie.')
     parser.add_argument("-cua", dest="custom_user_agent", required=False,
                         help='Set a custom user agent.')
+    parser.add_argument("--title", dest="title", required=False,
+                        action='store_true',
+                        help='Capitalize first letter in Fuzz.')
     parser.add_argument("-v", "--version", required=False, action="store_true",
                         help="Display software version.")
 
@@ -131,9 +134,15 @@ def main():
         """)
         sys.exit(0)
 
+    if args.title:
+        Core.settings.TITLE = True
+
+    if args.page_size:
+        Core.settings.PAGE_SIZE = args.page_size
+
     if args.proxies:
         network = Core.network.Network()
-        print("[+] Elite SOCKS4/SOCK5 Proxies")
+        print("[+] Elite SOCKS4/SOCKS5 Proxies")
         print("---")
         print(network.get_proxies().strip())
         print("---")
@@ -143,6 +152,7 @@ def main():
         Core.settings.Settings.session_cookie = args.session_cookie
 
     if args.custom_user_agent:
+        print(Core.settings.CUSTOM_USER_AGENT)
         Core.settings.CUSTOM_USER_AGENT = args.custom_user_agent
 
     if args.url is not None:
@@ -154,15 +164,14 @@ def main():
         print(f"[!] Invalid wordlist")
         sys.exit(1)
 
-    Core.settings.Settings.PAGE_SIZE = args.page_size
-
     print(f"""
     SETTINGS VERIFICATION
     {colored(f"[+] URL set to: {url}", "yellow")}
     {colored(f"[+] Wordlist set to: {Path.absolute(Path(wordlist))}", "yellow")}
     [+] Session Cookie: {Core.settings.Settings.session_cookie}
     {colored(f"[+] Custom User-Agent: {Core.settings.CUSTOM_USER_AGENT}", "yellow")}
-    [+] Page size(s) to ignore (comma-separated): {Core.settings.Settings.PAGE_SIZE[0]}
+    [+] Page size(s) to ignore: {Core.settings.PAGE_SIZE}
+    {colored(f"[+] Title set to {Core.settings.TITLE} (uppercase first letter of Fuzz if True)", "yellow")}
     """)
 
     answer = input(f"[?] Does this look correct ({colored('Y', attrs=['blink'])}/n) > ") or "y"
