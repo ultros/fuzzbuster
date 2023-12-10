@@ -1,4 +1,4 @@
-#!/usr/bin/env python3.11
+#!/usr/bin/env python3
 
 __version__ = "1.0.0"
 __author__ = "Jesse Shelley"
@@ -39,8 +39,9 @@ def print_banner():
 
 print_banner()
 
+
 @Core.settings.fuzz_time
-def fuzz(url: str, wordlist: str) -> list:
+def fuzz(url: str, wordlist: str) -> set:
     original_fuzzer_url = url
     networking = Core.network.Network()
     processing = Core.process.Process(wordlist)
@@ -171,7 +172,7 @@ def main():
     [+] Session Cookie: {Core.settings.Settings.session_cookie}
     {colored(f"[+] Custom User-Agent: {Core.settings.CUSTOM_USER_AGENT}", "yellow")}
     [+] Page size(s) to ignore: {Core.settings.PAGE_SIZE}
-    {colored(f"[+] Title set to {Core.settings.TITLE} (uppercase first letter of Fuzz if True)", "yellow")}
+    [+] Title set to {colored(str(Core.settings.TITLE), "yellow")} (uppercase first letter of Fuzz if True)")
     """)
 
     answer = input(f"[?] Does this look correct ({colored('Y', attrs=['blink'])}/n) > ") or "y"

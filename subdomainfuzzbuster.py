@@ -63,17 +63,20 @@ def process_host(host: str, url: str) -> str | None:
 
     try:
         res = requests.get(url, headers=headers, timeout=1)
-        origin_response = requests.get(url, headers=headers, timeout=1)
-
+        # print(res.status_code)
+        # print(url)
+        #print(Core.settings.PAGE_SIZE)
         if res.status_code == 200:
-            if len(origin_response.text) != len(res.text):
-                return f"Discovered subdomain: {host}"
-
-        if res.status_code == 404 and re.search('{"status": "running"}', res.text):
+            if str(len(res.content)) in Core.settings.PAGE_SIZE:
+                return
+            else:
+                print(f"[200]: {host} [Size: {len(res.content)}]")
+        elif res.status_code == 404 and re.search('{"status": "running"}', res.text):
             # handle Amazon S3 (s3.example.com) 404
             print(f"404 - {host}")
 
     except Exception as e:
+        #print(e)
         return
 
 
@@ -137,7 +140,14 @@ def main() -> None:
     parser.add_argument('-cua', required=False, dest='custom_user_agent',
                         help='Add a custom user agent to your queries.')
 
+    parser.add_argument("--size", required=False, nargs='+',
+                        default=[None], dest="page_size",
+                        help='Page sizes to ignore (--size 15 2010 8)')
+
     args = parser.parse_args()
+
+    if args.page_size:
+        Core.settings.PAGE_SIZE = args.page_size
 
     if args.custom_user_agent:
         Core.settings.CUSTOM_USER_AGENT = args.custom_user_agent

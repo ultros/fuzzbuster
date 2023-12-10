@@ -87,15 +87,15 @@ class Network:
                 case 301:
                     return f"[301] Permanent redirect: {url}"
                 case 401:
-                    if str(len(response.content)) in Core.settings.Settings.PAGE_SIZE:
+                    if str(len(response.content)) in Core.settings.PAGE_SIZE:
                         return
                     else:
                         return f"[401] Unauthorized: {url} [Size: {len(response.content)}]"
                 case 403:
-                    if re.search("You are authenticated as: anonymous", response.text):
-                        # Skip Jenkins redirect
+                    if str(len(response.content)) in Core.settings.PAGE_SIZE:
                         return
-                    return f"[403] Forbidden: {url}"
+                    else:
+                        return f"[403] Forbidden: {url} [Size: {len(response.content)}]"
                 case 500:
                     return
                 case _:
