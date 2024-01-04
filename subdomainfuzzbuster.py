@@ -62,10 +62,15 @@ def process_host(host: str, url: str) -> str | None:
         headers = {'Host': host, 'User-Agent': random.choice(Core.settings.UserAgents.user_agents)}
 
     try:
-        res = requests.get(url, headers=headers, timeout=1)
-        # print(res.status_code)
-        # print(url)
-        #print(Core.settings.PAGE_SIZE)
+        res = requests.get(url, headers=headers, timeout=1, verify=False, allow_redirects=True)
+
+        if re.search("File not found", res.text):
+            return
+        if re.search("Error 404", res.text):
+            return
+        if re.search("status=404", res.text) and re.search("Whitelabel Error Page", res.text):
+            # Spring boot 404 with default content
+            return
         if res.status_code == 200:
             if str(len(res.content)) in Core.settings.PAGE_SIZE:
                 return
@@ -76,8 +81,10 @@ def process_host(host: str, url: str) -> str | None:
             print(f"404 - {host}")
 
     except Exception as e:
-        #print(e)
+        # print(e)
         return
+
+
 
 
 def fuzz_subdomains(hostname: str, url: str, wordlist: str) -> None:
@@ -86,14 +93,14 @@ def fuzz_subdomains(hostname: str, url: str, wordlist: str) -> None:
 
     if re.search("^http", hostname):
         print('Remove "http://" or "https://" from hostname.')
-        exit(2)
+        exit(1)
 
     if not re.search("^http", url):
         print("Ensure your --URL/-u begins with http or https.")
-        exit(2)
+        exit(1)
 
     hosts = prepare_wordlist(hostname, wordlist)
-
+    requests.packages.urllib3.disable_warnings()
     with concurrent.futures.ThreadPoolExecutor(max_workers=30) as executor:
         futures = []
 
@@ -159,7 +166,7 @@ def main() -> None:
         wordlist = args.wordlist
     else:
         print(f"[!] Invalid wordlist")
-        exit(2)
+        exit(1)
 
     if args.host is not None:
         host = args.host

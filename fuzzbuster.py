@@ -41,7 +41,7 @@ print_banner()
 
 
 @Core.settings.fuzz_time
-def fuzz(url: str, wordlist: str) -> set:
+def fuzz(url: str, wordlist: str) -> list:
     original_fuzzer_url = url
     networking = Core.network.Network()
     processing = Core.process.Process(wordlist)
@@ -66,9 +66,10 @@ def fuzz(url: str, wordlist: str) -> set:
                 valid_response_list.append(response)
                 print(f"{response}")
 
+
             i += 1
             print(end='\x1b[2K')
-            print(f"{i} of {total_urls}", end="\r")  # to end of line
+            print(f"{i} of {total_urls} ({networking.timeouts} URLs have timed out)", end="\r")  # to end of line
 
         assert type(valid_response_list) == list
         logging.info(
@@ -77,10 +78,6 @@ def fuzz(url: str, wordlist: str) -> set:
 
         for url in valid_response_list:
             logging.info(f" -  {url}")
-
-        for url in networking.retry_addresses:
-            logging.info(f"[!] Failed to connect: {url}")
-            print(f"[!] Failed to connect: {url}")
 
     return valid_response_list
 
@@ -129,9 +126,10 @@ def main():
 
     if args.version:
         print(f"""
-        fuzzbuster Version {__version__}
+        fuzzbuster Version {__version__} - 1/3/2024
         Author: {__author__}
         Contact: {__email__}
+        GitHub: https://github.com/ultros/fuzzbuster
         """)
         sys.exit(0)
 
@@ -143,7 +141,7 @@ def main():
 
     if args.proxies:
         network = Core.network.Network()
-        print("[+] Elite SOCKS4/SOCKS5 Proxies")
+        print("[+] Elite SOCKS4 Proxies")
         print("---")
         print(network.get_proxies().strip())
         print("---")
@@ -153,7 +151,6 @@ def main():
         Core.settings.Settings.session_cookie = args.session_cookie
 
     if args.custom_user_agent:
-        print(Core.settings.CUSTOM_USER_AGENT)
         Core.settings.CUSTOM_USER_AGENT = args.custom_user_agent
 
     if args.url is not None:
@@ -174,6 +171,10 @@ def main():
     [+] Page size(s) to ignore: {Core.settings.PAGE_SIZE}
     [+] Title set to {colored(str(Core.settings.TITLE), "yellow")} (uppercase first letter of Fuzz if True)")
     """)
+    if Core.settings.SocksProxy.enable_socks:
+        print(f"""
+    [!] Proxies in use: {Core.settings.SocksProxy.socks_list}
+        """)
 
     answer = input(f"[?] Does this look correct ({colored('Y', attrs=['blink'])}/n) > ") or "y"
     if not answer.lower() == "y":

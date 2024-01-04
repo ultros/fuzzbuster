@@ -6,21 +6,18 @@ CUSTOM_USER_AGENT = None
 TITLE = False
 
 
+
 class Settings:
     max_workers = 100
-    timeout = (3, 3)  # (connecting timeout, reading timeout)
+    timeout = (5, 5)  # (connecting timeout, reading timeout)
+    timeouts = 0
     session_cookie = {}
 
 
 class SocksProxy:
-    enable_socks = False
+    enable_socks = False  # set to true to utilize proxies
     # ['socks5://user:password@host:port', 'socks4://178.212.48.70:1080']
-    socks_list = []
-
-
-class TorProxy:
-    enable_socks = False
-    tor_proxy = 'socks5://127.0.0.1:9050'
+    socks_list = ['socks4://80.254.185.73:1080']
 
 
 class UserAgents:
@@ -57,6 +54,7 @@ def trace(func):
         original_result = func(*args, **kwargs)
         print(f'TRACE: {func.__name__}() returned {original_result}')
         return original_result
+
     return wrapper
 
 
@@ -67,4 +65,5 @@ def fuzz_time(func):
         print(f'{Colors.NOTE}[+] Fuzzer completed at {datetime.datetime.today()}{Colors.END}')
         print(f'[+] Closing...')
         return responses
+
     return wrapper

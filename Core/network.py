@@ -8,7 +8,7 @@ import Core.settings
 
 class Network:
     def __init__(self):
-        self.retry_addresses = []
+        self.timeouts = 0
 
     # @Core.settings.trace
     def perform_request(self, url: str, host: str = None) -> str | None:
@@ -18,8 +18,6 @@ class Network:
             url -- The URL to request.
         Returns the HTTP status code of that request.
         """
-        if Core.settings.SocksProxy.enable_socks and Core.settings.TorProxy.enable_socks:
-            sys.exit("[!] WARNING: Both SOCKS5 and Tor are enabled in settings. Utilize only one proxy type.")
 
         if Core.settings.CUSTOM_USER_AGENT:
             headers = {
@@ -46,10 +44,6 @@ class Network:
             proxy = random.choice(Core.settings.SocksProxy.socks_list)
             proxies = {'http': proxy, 'https': proxy}
 
-        if Core.settings.TorProxy.enable_socks:
-            proxy = Core.settings.TorProxy.tor_proxy
-            proxies = {'http': proxy, 'https': proxy}
-
         try:
             urllib3.disable_warnings()  # Disable InsecureRequestWarning when attempting HTTPS
             response = requests.get(url=url, headers=headers, cookies=cookies, proxies=proxies,
@@ -57,35 +51,33 @@ class Network:
         except requests.exceptions.SSLError:
             print("SSLERROR")
         except Exception as e:
+            if "Missing dependencies" in str(e):
+                return "For socks support you need to install: $ pip3 install pysocks"
+            if "ConnectTimeoutError" in str(e):
+                self.timeouts += 1
             return
+
         else:
             match response.status_code:
                 case 200:
-                    if re.search('File not found', response.text):
-                        return
-                    if re.search("Error 404", response.text):
-                        return
-                    if re.search("status=404", response.text) and re.search("Whitelabel Error Page",
-                                                                            response.text):
-                        # Spring boot 404 with default content
-                        return
-                    if re.search("go_gc_cycles", response.text):
-                        # golang
-                        return
-
                     if Core.settings.PAGE_SIZE != [None]:
+                        print("test")
                         if str(len(response.content)) in Core.settings.PAGE_SIZE:
                             return
                         else:
                             return f"[200] Discovered: {url} [Size: {len(response.content)}]"
-
                     else:
                         return f"[200] Discovered: {url} [Size: {len(response.content)}]"
-
                 case 302:
-                    return f"[302] Temporary redirect: {url}"
+                    if str(len(response.content)) in Core.settings.PAGE_SIZE:
+                        return
+                    else:
+                        return f"[302] Temporary redirect: {url}"
                 case 301:
-                    return f"[301] Permanent redirect: {url}"
+                    if str(len(response.content)) in Core.settings.PAGE_SIZE:
+                        return
+                    else:
+                        return f"[301] Permanent redirect: {url}"
                 case 401:
                     if str(len(response.content)) in Core.settings.PAGE_SIZE:
                         return
@@ -103,7 +95,7 @@ class Network:
             return
 
     def get_proxies(self) -> str:
-        url = "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=socks4,socks5&" \
+        url = "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=socks4&" \
               "timeout=100&country=all&ssl=all&anonymity=elite"
         try:
             response = requests.get(url)
