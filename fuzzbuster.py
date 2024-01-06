@@ -66,7 +66,6 @@ def fuzz(url: str, wordlist: str) -> list:
                 valid_response_list.append(response)
                 print(f"{response}")
 
-
             i += 1
             print(end='\x1b[2K')
             print(f"{i} of {total_urls} ({networking.timeouts} URLs have timed out)", end="\r")  # to end of line

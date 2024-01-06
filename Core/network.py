@@ -61,7 +61,6 @@ class Network:
             match response.status_code:
                 case 200:
                     if Core.settings.PAGE_SIZE != [None]:
-                        print("test")
                         if str(len(response.content)) in Core.settings.PAGE_SIZE:
                             return
                         else:
