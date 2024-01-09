@@ -11,7 +11,7 @@ class Network:
         self.timeouts = 0
 
     # @Core.settings.trace
-    def perform_request(self, url: str, host: str = None) -> str | None:
+    def perform_request(self, url: str) -> str | None:
         """Receives a URL to request. Performs the request with or without proxies.
 
         Keyword arguments:

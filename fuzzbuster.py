@@ -16,6 +16,7 @@ import Core.network
 import Core.process
 import Core.reports
 import Core.settings
+from alive_progress import alive_bar
 
 logging.basicConfig(filename="log.txt", encoding='utf-8', level=logging.INFO, format='')
 
@@ -51,32 +52,31 @@ def fuzz(url: str, wordlist: str) -> list:
     i = 0
     valid_response_list = []
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=Core.settings.Settings.max_workers) as executor:
+    with (concurrent.futures.ThreadPoolExecutor(max_workers=Core.settings.Settings.max_workers) as executor):
         futures = []
+        with alive_bar(len(formatted_url_list), title='[+] Scanning Targets...', bar='smooth',
+                       enrich_print=False) as bar:
 
-        for url in formatted_url_list:
-            futures.append(executor.submit(networking.perform_request, url))
-            total_urls += 1
-            print(f"Total URLs: {total_urls}...", end="\r")
+            for url in formatted_url_list:
+                futures.append(executor.submit(networking.perform_request, url))
 
-        for future in concurrent.futures.as_completed(futures):
-            response = future.result()
+            for future in concurrent.futures.as_completed(futures):
+                response = future.result()
 
-            if response is not None:
-                valid_response_list.append(response)
-                print(f"{response}")
+                if response is not None:
+                    valid_response_list.append(response)
+                    print(f"{response}")
 
-            i += 1
-            print(end='\x1b[2K')
-            print(f"{i} of {total_urls} ({networking.timeouts} URLs have timed out)", end="\r")  # to end of line
+                bar()
 
-        assert type(valid_response_list) == list
-        logging.info(
-            f"{dt.now()} ({original_fuzzer_url}) {len(valid_response_list)} resolved URLs returned from {total_urls}"
-            f" total URL entries.")
+            assert type(valid_response_list) == list
+            logging.info(
+                f"{dt.now()} ({original_fuzzer_url}) {len(valid_response_list)} "
+                f"resolved URLs returned from {total_urls}"
+                f" total URL entries.")
 
-        for url in valid_response_list:
-            logging.info(f" -  {url}")
+            for url in valid_response_list:
+                logging.info(f" -  {url}")
 
     return valid_response_list
 
@@ -192,6 +192,10 @@ def main():
     if args.json is not None:
         jsonreport = Core.reports.JsonReport(args.json, url, responses)
         jsonreport.generate_json()
+
+
+def install_dependencies():
+    pass
 
 
 if __name__ == "__main__":
