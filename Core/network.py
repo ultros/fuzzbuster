@@ -1,5 +1,4 @@
 import random
-import re
 import sys
 import urllib3
 import requests
@@ -8,7 +7,8 @@ import Core.settings
 
 class Network:
     def __init__(self):
-        self.timeouts = 0
+        self.timeouts = 0  # connection error
+        self.timeout_addresses = []
 
     # @Core.settings.trace
     def perform_request(self, url: str) -> str | None:
@@ -55,6 +55,8 @@ class Network:
                 return "For socks support you need to install: $ pip3 install pysocks"
             if "ConnectTimeoutError" in str(e):
                 self.timeouts += 1
+                self.timeout_addresses.append(url)
+
             return
 
         else:
@@ -99,6 +101,6 @@ class Network:
         try:
             response = requests.get(url)
         except Exception as e:
-            sys.exit(e)
+            sys.exit(1)
 
         return response.text

@@ -54,9 +54,7 @@ def fuzz(url: str, wordlist: str) -> list:
 
     with (concurrent.futures.ThreadPoolExecutor(max_workers=Core.settings.Settings.max_workers) as executor):
         futures = []
-        with alive_bar(len(formatted_url_list), title='[+] Scanning Targets...', bar='smooth',
-                       enrich_print=False) as bar:
-
+        with alive_bar(len(formatted_url_list), title=f'Scanning Target', bar='smooth', enrich_print=False) as bar:
             for url in formatted_url_list:
                 futures.append(executor.submit(networking.perform_request, url))
 
@@ -69,7 +67,9 @@ def fuzz(url: str, wordlist: str) -> list:
 
                 bar()
 
-            assert type(valid_response_list) == list
+            print(f"Total connection errors: {networking.timeouts}")
+
+            assert type(valid_response_list) is list
             logging.info(
                 f"{dt.now()} ({original_fuzzer_url}) {len(valid_response_list)} "
                 f"resolved URLs returned from {total_urls}"
@@ -77,7 +77,7 @@ def fuzz(url: str, wordlist: str) -> list:
 
             for url in valid_response_list:
                 logging.info(f" -  {url}")
-
+    #print(f"[!] Connection errors: {networking.timeouts}")
     return valid_response_list
 
 

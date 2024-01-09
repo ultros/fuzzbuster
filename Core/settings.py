@@ -17,7 +17,7 @@ class Settings:
 class SocksProxy:
     enable_socks = False  # set to true to utilize proxies
     # ['socks5://user:password@host:port', 'socks4://178.212.48.70:1080']
-    socks_list = ['socks4://80.254.185.73:1080']
+    socks_list = ['45.95.233.191:1080']
 
 
 class UserAgents:
