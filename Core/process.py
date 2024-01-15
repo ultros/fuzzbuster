@@ -11,7 +11,7 @@ class Process:
     def format_url(self, url: str, keyword: str) -> str | None:
         """Returns a formatted URL to fuzz/directory bust."""
         if "http" not in url:
-            sys.exit(f"Add a protocol (http/https) to the URL ({url}).")
+            sys.exit(f"Add a URL scheme (http/https) to the URL ({url}).")
         try:
             # if Core.settings.Settings.HOST:
             #     formatted_url = url
@@ -32,6 +32,8 @@ class Process:
         """Returns valid URLs (list) and a total of all URLs in the wordlist."""
         valid_urls = []
         wordlist = ''
+        word = ''
+        temp_url = ''
 
         try:
             wordlist = open(self.wordlist, 'r')
@@ -50,7 +52,9 @@ class Process:
                     sys.exit(0)
 
         except Exception as e:
-            print(e)
+            pass
+            # if "can't decode byte" in str(e):
+            #     valid_urls.append(self.format_url(url, word.decode('utf-8')))
 
         # print(id(valid_urls))
         return valid_urls

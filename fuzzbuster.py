@@ -77,7 +77,7 @@ def fuzz(url: str, wordlist: str) -> list:
 
             for url in valid_response_list:
                 logging.info(f" -  {url}")
-    #print(f"[!] Connection errors: {networking.timeouts}")
+
     return valid_response_list
 
 
