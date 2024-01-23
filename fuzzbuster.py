@@ -8,12 +8,12 @@ import argparse
 import concurrent.futures
 import logging
 import os
+import re
 import sys
 from pathlib import Path
 from datetime import datetime as dt
 from termcolor import colored
 import Core.network
-import Core.process
 import Core.reports
 import Core.settings
 from alive_progress import alive_bar
@@ -45,27 +45,34 @@ print_banner()
 def fuzz(url: str, wordlist: str) -> list:
     original_fuzzer_url = url
     networking = Core.network.Network()
-    processing = Core.process.Process(wordlist)
-    formatted_url_list = processing.format_wordlist(url)
-
     total_urls = 0
-    i = 0
+    total_words = 0
     valid_response_list = []
 
     with (concurrent.futures.ThreadPoolExecutor(max_workers=Core.settings.Settings.max_workers) as executor):
         futures = []
-        with alive_bar(len(formatted_url_list), title=f'Scanning Target', bar='smooth', enrich_print=False) as bar:
-            for url in formatted_url_list:
-                futures.append(executor.submit(networking.perform_request, url))
+        with open(wordlist, 'r', encoding='utf-8') as wordlist:
+            try:
+                for word in wordlist:
+                    total_words += 1
+            except Exception as e:
+                pass
 
-            for future in concurrent.futures.as_completed(futures):
-                response = future.result()
+            with alive_bar(total_words, title=f'Scanning Target', bar='smooth', enrich_print=False) as bar:
+                for word in wordlist:
+                    if re.search("FUZZ", url):
+                        formatted_url = url.replace("FUZZ", word.strip())
+                        futures.append(executor.submit(networking.perform_request, formatted_url))
+                        total_urls += 1
 
-                if response is not None:
-                    valid_response_list.append(response)
-                    print(f"{response}")
+                for future in concurrent.futures.as_completed(futures):
+                    response = future.result()
 
-                bar()
+                    if response is not None:
+                        valid_response_list.append(response)
+                        print(f"{response}")
+
+                    bar()
 
             print(f"Total connection errors: {networking.timeouts}")
 
@@ -115,6 +122,8 @@ def main():
                         help="Display software version.")
 
     args = parser.parse_args()
+
+    url = ''
 
     try:
         if sys.argv[1]:
