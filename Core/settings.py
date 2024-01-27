@@ -3,8 +3,6 @@ import datetime
 # globals
 PAGE_SIZE = None
 CUSTOM_USER_AGENT = None
-TITLE = False
-
 
 
 class Settings:

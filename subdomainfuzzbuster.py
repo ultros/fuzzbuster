@@ -144,7 +144,7 @@ def main() -> None:
                         default=None,
                         help='Specify wordlist to use (e.g. /usr/share/wordlists/dirb/big.txt)')
 
-    parser.add_argument('-cua', required=False, dest='custom_user_agent',
+    parser.add_argument('--custom_user_agent', required=False, dest='custom_user_agent',
                         help='Add a custom user agent to your queries.')
 
     parser.add_argument("--size", required=False, nargs='+',

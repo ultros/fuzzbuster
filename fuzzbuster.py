@@ -48,17 +48,21 @@ def fuzz(url: str, wordlist: str) -> list:
     total_urls = 0
     total_words = 0
     valid_response_list = []
+    wlist = wordlist
 
     with (concurrent.futures.ThreadPoolExecutor(max_workers=Core.settings.Settings.max_workers) as executor):
         futures = []
-        with open(wordlist, 'r', encoding='utf-8') as wordlist:
+        with open(wordlist, 'r') as wordlist:
             try:
                 for word in wordlist:
                     total_words += 1
             except Exception as e:
+                #print(e)
                 pass
+        wordlist.close()
 
-            with alive_bar(total_words, title=f'Scanning Target', bar='smooth', enrich_print=False) as bar:
+        with alive_bar(total_words, title=f'Scanning Target', bar='smooth', enrich_print=False) as bar:
+            with open(wlist, 'r', errors="surrogateescape") as wordlist:
                 for word in wordlist:
                     if re.search("FUZZ", url):
                         formatted_url = url.replace("FUZZ", word.strip())
@@ -111,13 +115,10 @@ def main():
     parser.add_argument("--get_proxies", dest="proxies", required=False,
                         action='store_true',
                         help='Gather socks4/socks5 elite proxies.')
-    parser.add_argument("-sc", dest="session_cookie", required=False,
+    parser.add_argument("--session_cookie", dest="session_cookie", required=False,
                         help='Specify a session cookie.')
-    parser.add_argument("-cua", dest="custom_user_agent", required=False,
+    parser.add_argument("--custom_user_agent", dest="custom_user_agent", required=False,
                         help='Set a custom user agent.')
-    parser.add_argument("--title", dest="title", required=False,
-                        action='store_true',
-                        help='Capitalize first letter in Fuzz.')
     parser.add_argument("-v", "--version", required=False, action="store_true",
                         help="Display software version.")
 
@@ -140,9 +141,6 @@ def main():
         GitHub: https://github.com/ultros/fuzzbuster
         """)
         sys.exit(0)
-
-    if args.title:
-        Core.settings.TITLE = True
 
     if args.page_size:
         Core.settings.PAGE_SIZE = args.page_size
@@ -177,7 +175,6 @@ def main():
     [+] Session Cookie: {Core.settings.Settings.session_cookie}
     {colored(f"[+] Custom User-Agent: {Core.settings.CUSTOM_USER_AGENT}", "yellow")}
     [+] Page size(s) to ignore: {Core.settings.PAGE_SIZE}
-    [+] Title set to {colored(str(Core.settings.TITLE), "yellow")} (uppercase first letter of Fuzz if True)")
     """)
     if Core.settings.SocksProxy.enable_socks:
         print(f"""
