@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-__version__ = "1.0.0"
+__version__ = "1.0.1"
 __author__ = "Jesse Shelley"
 __email__ = "realjesseshelley@gmail.com"
 
@@ -49,10 +49,11 @@ def fuzz(url: str, wordlist: str) -> list:
     total_words = 0
     valid_response_list = []
     wlist = wordlist
+    runonetime = False
 
     with (concurrent.futures.ThreadPoolExecutor(max_workers=Core.settings.Settings.max_workers) as executor):
         futures = []
-        with open(wordlist, 'r') as wordlist:
+        with open(wordlist, 'r', errors="surrogateescape") as wordlist:
             try:
                 for word in wordlist:
                     total_words += 1
@@ -88,6 +89,11 @@ def fuzz(url: str, wordlist: str) -> list:
 
             for url in valid_response_list:
                 logging.info(f" -  {url}")
+
+    # if networking.timeout_addresses and runonetime is False:
+    #     for timeout_address in networking.timeout_addresses:
+    #         fuzz(timeout_address, wlist)
+    #     runonetime = True
 
     return valid_response_list
 
