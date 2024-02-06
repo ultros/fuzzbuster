@@ -73,7 +73,7 @@ def fuzz(url: str, wordlist: str) -> list:
                 for future in concurrent.futures.as_completed(futures):
                     response = future.result()
                     try:
-                        if response is not None and response[0] != 404:
+                        if response is not None and response[0] != 404 and response[1] not in Core.settings.PAGE_SIZE:
                             valid_response_list.append(response)
                             print(f"{response[2]} [Status Code: {response[0]} | Content Size: {response[1]}]")
                     except Exception as e:
