@@ -36,7 +36,7 @@ def prepare_wordlist(url: str, wordlist: str) -> Tuple[list, list, int]:
     badwords = []
 
     assert os.path.exists(wordlist)
-    file = open(wordlist, 'r')
+    file = open(wordlist, 'r', errors="surrogateescape")
 
     try:
         for word in file:
@@ -62,7 +62,7 @@ def process_host(host: str, url: str) -> str | None:
         headers = {'Host': host, 'User-Agent': random.choice(Core.settings.UserAgents.user_agents)}
 
     try:
-        res = requests.get(url, headers=headers, timeout=1, verify=False, allow_redirects=True)
+        res = requests.get(url, headers=headers, timeout=3, verify=False, allow_redirects=True)
 
         if re.search("File not found", res.text):
             return
@@ -81,7 +81,7 @@ def process_host(host: str, url: str) -> str | None:
             print(f"404 - {host}")
 
     except Exception as e:
-        # print(e)
+        print(e)
         return
 
 
@@ -110,6 +110,7 @@ def fuzz_subdomains(hostname: str, url: str, wordlist: str) -> None:
         try:
             for future in concurrent.futures.as_completed(futures):
                 res = future.result()
+                print(res.text)
                 if res is not None:
                     valid_response_list.append(res)
                     print(f"{res}")

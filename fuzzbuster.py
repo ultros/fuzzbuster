@@ -58,7 +58,7 @@ def fuzz(url: str, wordlist: str) -> list:
                 for word in wordlist:
                     total_words += 1
             except Exception as e:
-                #print(e)
+                # print(e)
                 pass
         wordlist.close()
 
@@ -72,11 +72,13 @@ def fuzz(url: str, wordlist: str) -> list:
 
                 for future in concurrent.futures.as_completed(futures):
                     response = future.result()
-
-                    if response is not None:
-                        valid_response_list.append(response)
-                        print(f"{response}")
-
+                    try:
+                        if response is not None and response[0] != 404:
+                            valid_response_list.append(response)
+                            print(f"{response[2]} [Status Code: {response[0]} | Content Size: {response[1]}]")
+                    except Exception as e:
+                        # print(e)
+                        pass
                     bar()
 
             print(f"Total connection errors: {networking.timeouts}")
@@ -90,13 +92,7 @@ def fuzz(url: str, wordlist: str) -> list:
             for url in valid_response_list:
                 logging.info(f" -  {url}")
 
-    # if networking.timeout_addresses and runonetime is False:
-    #     for timeout_address in networking.timeout_addresses:
-    #         fuzz(timeout_address, wlist)
-    #     runonetime = True
-
     return valid_response_list
-
 
 def main():
     parser = argparse.ArgumentParser(description="Concurrent directory, parameter, and query fuzzer.")

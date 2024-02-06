@@ -11,7 +11,7 @@ class Network:
         self.timeout_addresses = []
 
     # @Core.settings.trace
-    def perform_request(self, url: str) -> str | None:
+    def perform_request(self, url: str) -> tuple[int, int, str] | None:
         """Receives a URL to request. Performs the request with or without proxies.
 
         Keyword arguments:
@@ -47,53 +47,24 @@ class Network:
         try:
             urllib3.disable_warnings()  # Disable InsecureRequestWarning when attempting HTTPS
             response = requests.get(url=url, headers=headers, cookies=cookies, proxies=proxies,
-                                    timeout=Core.settings.Settings.timeout, verify=False, allow_redirects=True)
+                                    timeout=Core.settings.Settings.timeout, verify=False, allow_redirects=False)
         except requests.exceptions.SSLError:
             print("SSLERROR")
         except Exception as e:
             if "Missing dependencies" in str(e):
-                return "For socks support you need to install: $ pip3 install pysocks"
+                print("For socks support you need to install: $ pip3 install pysocks")
             if "ConnectTimeoutError" in str(e):
                 self.timeouts += 1
                 self.timeout_addresses.append(url)
-
-            return
-
         else:
-            match response.status_code:
-                case 200:
-                    if Core.settings.PAGE_SIZE != [None]:
-                        if str(len(response.content)) in Core.settings.PAGE_SIZE:
-                            return
-                        else:
-                            return f"[200] Discovered: {url} [Size: {len(response.content)}]"
-                    else:
-                        return f"[200] Discovered: {url} [Size: {len(response.content)}]"
-                case 302:
-                    if str(len(response.content)) in Core.settings.PAGE_SIZE:
-                        return
-                    else:
-                        return f"[302] Temporary redirect: {url}"
-                case 301:
-                    if str(len(response.content)) in Core.settings.PAGE_SIZE:
-                        return
-                    else:
-                        return f"[301] Permanent redirect: {url}"
-                case 401:
-                    if str(len(response.content)) in Core.settings.PAGE_SIZE:
-                        return
-                    else:
-                        return f"[401] Unauthorized: {url} [Size: {len(response.content)}]"
-                case 403:
-                    if str(len(response.content)) in Core.settings.PAGE_SIZE:
-                        return
-                    else:
-                        return f"[403] Forbidden: {url} [Size: {len(response.content)}]"
-                case 500:
-                    return
-                case _:
-                    pass
-            return
+            if str(len(response.content)) in Core.settings.PAGE_SIZE:
+                return
+            else:
+                status_code = response.status_code
+                page_size = len(response.content)
+
+                if status_code is not None:
+                    return status_code, page_size, url
 
     def get_proxies(self) -> str:
         url = "https://api.proxyscrape.com/v2/?request=displayproxies&protocol=socks4&" \
