@@ -1,4 +1,5 @@
+alive_progress==3.1.5
 fpdf==1.7.2
 Requests==2.31.0
-termcolor==2.3.0
-urllib3==2.0.7
+termcolor==2.4.0
+urllib3==2.2.0

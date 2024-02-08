@@ -13,8 +13,6 @@ import sys
 import urllib.parse
 from pathlib import Path
 from datetime import datetime as dt
-
-import urllib3.util
 from termcolor import colored
 import Core.network
 import Core.reports
@@ -60,7 +58,6 @@ def fuzz(url: str, wordlist: str) -> list:
                 for word in wordlist:
                     total_words += 1
             except Exception as e:
-                # print(e)
                 pass
         wordlist.close()
 
@@ -188,12 +185,8 @@ def main():
     [+] Session Cookie: {Core.settings.Settings.session_cookie}
     {colored(f"[+] Custom User-Agent: {Core.settings.CUSTOM_USER_AGENT}", "yellow")}
     [+] Page size(s) to ignore: {Core.settings.PAGE_SIZE}
-    """)
-    if Core.settings.SocksProxy.enable_socks:
-        print(f"""
-    [!] Proxies in use: {Core.settings.SocksProxy.socks_list}
-        """)
-
+    [+] Using URL Encoding ({Core.settings.Settings.url_encode})
+""")
     answer = input(f"[?] Does this look correct ({colored('Y', attrs=['blink'])}/n) > ") or "y"
     if not answer.lower() == "y":
         sys.exit(0)
