@@ -10,8 +10,11 @@ import logging
 import os
 import re
 import sys
+import urllib.parse
 from pathlib import Path
 from datetime import datetime as dt
+
+import urllib3.util
 from termcolor import colored
 import Core.network
 import Core.reports
@@ -49,7 +52,6 @@ def fuzz(url: str, wordlist: str) -> list:
     total_words = 0
     valid_response_list = []
     wlist = wordlist
-    runonetime = False
 
     with (concurrent.futures.ThreadPoolExecutor(max_workers=Core.settings.Settings.max_workers) as executor):
         futures = []
@@ -65,6 +67,9 @@ def fuzz(url: str, wordlist: str) -> list:
         with alive_bar(total_words, title=f'Scanning Target', bar='smooth', enrich_print=False) as bar:
             with open(wlist, 'r', errors="surrogateescape") as wordlist:
                 for word in wordlist:
+                    if Core.settings.Settings.url_encode is True:
+                        word = urllib.parse.quote(word.strip())
+
                     if re.search("FUZZ", url):
                         formatted_url = url.replace("FUZZ", word.strip())
                         futures.append(executor.submit(networking.perform_request, formatted_url))
@@ -114,6 +119,9 @@ def main():
     parser.add_argument("--size", required=False, nargs='+',
                         default=[None], dest="page_size",
                         help='Page sizes to ignore (--size 15 2010 8)')
+    parser.add_argument("--url_encode", required=False, default=False,
+                        help='URL Encode characters in wordlist.', dest="url_encode",
+                        action='store_true')
     parser.add_argument("--get_proxies", dest="proxies", required=False,
                         action='store_true',
                         help='Gather socks4/socks5 elite proxies.')
@@ -134,6 +142,9 @@ def main():
     except IndexError:
         parser.print_help()
         sys.exit(1)
+
+    if args.url_encode:
+        Core.settings.Settings.url_encode = True
 
     if args.version:
         print(f"""

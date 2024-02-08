@@ -10,6 +10,7 @@ class Settings:
     timeout = (5, 5)  # (connecting timeout, reading timeout)
     timeouts = 0
     session_cookie = {}
+    url_encode = False
 
 
 class SocksProxy:
