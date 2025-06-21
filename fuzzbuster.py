@@ -59,7 +59,6 @@ def fuzz(url: str, wordlist: str) -> list:
                     total_words += 1
             except Exception as e:
                 pass
-        wordlist.close()
 
         with alive_bar(total_words, title=f'Scanning Target', bar='smooth', enrich_print=False) as bar:
             with open(wlist, 'r', errors="surrogateescape") as wordlist:
